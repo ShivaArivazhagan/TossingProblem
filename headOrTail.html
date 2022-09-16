@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        let participants = [{ name: "compter", Points: 0 }, { name: "You", Points: 0 }]
+        let totalMatches = 10;
+        let Round = 1;
+        let blopStorage = [];
+       
+        function matchesResultAssigning(PossibleOutcome, player, totalRounds) {
+            let eachRoundDetails = [];
+            let eachRoundResult = [];
+            for (eachMatches = 0; eachMatches <= totalMatches - 1; eachMatches++) {
+                if (PossibleOutcome[eachMatches] == 1) {
+                    const eachMatchDetails = {
+                        MATCH: eachMatches + 1,
+                        PLAYER1NAME: player[0].name,
+                        PLAYER1: 'HEAD',
+                        PLAYER2NAME: player[1].name,
+                        PLAYER2: 'FLOWER',
+                        MATCHRESULT: 'compter WON'
+                    };
+                    blopStorage.push(eachMatchDetails);
+                    eachRoundDetails.push(eachMatchDetails);
+                    player[0].Points += 1
+                } else if (PossibleOutcome[(totalMatches * 2) - eachMatches] == 1) {
+                    const eachMatchDetails = {
+                        MATCH: eachMatches + 1,
+                        PLAYER1NAME: player[0].name,
+                        PLAYER1: 'FLOWER',
+                        PLAYER2NAME: player[1].name,
+                        PLAYER2: 'HEAD',
+                        MATCHRESULT: 'COMPUTER WON'
+                    }
+                    blopStorage.push(eachMatchDetails);
+                    eachRoundDetails.push(eachMatchDetails);
+                    player[1].Points += 1
+                }
+                else {
+                    const eachMatchDetails = {
+                        MATCH: eachMatches + 1,
+                        PLAYER1NAME: player[0].name,
+                        PLAYER1: 'FLOWER',  
+                        PLAYER2NAME: player[1].name,
+                        PLAYER2: 'FLOWER',
+                        MATCHRESULT: 'BOTH LOSS'}
+                    blopStorage.push(eachMatchDetails);
+                    eachRoundDetails.push(eachMatchDetails);
+                    player[1].Points += 0;
+                    player[0].Points += 0;
+                }
+            }
+            const newNumber = totalRounds - 1;
+            let eachMatchPlayerAResult = eachRoundDetails.reduce((a, b) => a + b.PLAYER1POINTS, 0);
+            let eachMatchPlayerBResult = eachRoundDetails.reduce((a, b) => a + b.PLAYER2POINTS, 0);
+            const eachRoundResultA = {
+                name: "compter",
+                Points: eachMatchPlayerAResult
+            }
+            eachRoundResult.push(eachRoundResultA)
+            const eachRoundResultB = {
+                name: "YOU",
+                Points: eachMatchPlayerBResult
+            }
+            eachRoundResult.push(eachRoundResultB)
+            if (newNumber > 0) {
+                setTimeout(() => {
+                    console.table(`ROUND ${Round}`);
+                    eachMatchLoopCount = 0;
+                    sI = setInterval(() => {
+                        justGiveThePassingValueToMe(eachRoundDetails)
+                        if (eachMatchLoopCount == 9) {
+                            clearInterval(sI);
+                        }
+                        eachMatchLoopCount++
+                    }, 1000);
+                    matchNumber = 0;
+                    function justGiveThePassingValueToMe(anything) {
+                        if (matchNumber > 10) {
+                            matchNumber = 0;
+                        }
+                        console.log(anything[matchNumber])
+                        matchNumber++;
+                    }
+                    setTimeout(() => {
+                        console.table(eachRoundDetails);
+                        console.log('-------------------------------------------------------------');
+                        console.table(`ROUND ${Round} RESULT`);
+                        console.table(eachRoundResult)
+                        summary(eachRoundResult)
+                        console.log('-------------------------------------------------------------');
+                        Round++
+                        console.table(`OVERALL ROUND GAME RESULT`)
+                        console.table(player);
+                        summary(player)
+                        console.log('-------------------------------------------------------------');
+                        console.log('-------------------------------------------------------------');
+                        matchesResultAssigning((possibilitiesOfHeadOrTails(totalMatches)), participants, newNumber)
+                    }, 14000);
+                }, 1000)
+            }
+        } matchesResultAssigning((possibilitiesOfHeadOrTails(totalMatches)), participants, 5)
+        function possibilitiesOfHeadOrTails(Matches) {
+            possibleOutcomeResult = []
+            for (everyMatch = 0; everyMatch <= (Matches * 2) - 1; everyMatch++) {
+                let foundedResult = Math.floor((Math.random() * 2) + 1);
+                possibleOutcomeResult.push(foundedResult)
+            }
+            return possibleOutcomeResult
+        }
+        function summary(player) {
+            player[0].Points > player[1].Points && console.table(`Player ${player[0].name} leads ${player[0].Points} Heads`);
+            player[0].Points < player[1].Points && console.table(`Player ${player[1].name} leads ${player[1].Points} Heads`);
+            player[0].Points == player[1].Points && console.table(`Both Player ${player[0].name} & ${player[1].name} have ${player[0].Points}Heads`);
+        }
+        setTimeout(() => {
+            blopresult = ''
+            blopString = ''
+            blopString += "MATCH,PLAYER1NAME,PLAYER1 RESULT, PLAYER2NAME,PLAYER2 RESULT,MATCHRESULT"
+            blopString += "\r\n"
+            count = 0
+            for (element of blopStorage) {
+                if (count == 10) {
+                    count = 0
+                    blopString += "\r\n"
+                    blopString += "MATCH,PLAYER1NAME,PLAYER1, PLAYER2NAME,PLAYER2,MATCHRESULT"
+                    blopString += "\r\n"
+                }
+                blopString += element.MATCH + "," + element.PLAYER1NAME + "," + element.PLAYER1 + "," + element.PLAYER2NAME + "," + element.PLAYER2 + "," + element.MATCHRESULT + ","
+                blopString += "\r\n"
+                count++
+            }
+            console.log(blopString);
+            let tempBlop = new Blob([blopString], { type: 'text/csv' })
+            let tempURL = window.URL.createObjectURL(tempBlop)
+            let activation = document.createElement("a")
+            activation.href = tempURL
+            activation.download = 'Result.csv'
+            activation.click()
+            window.URL.revokeObjectURL(tempURL)
+            activation.remove()
+        }, 50 * 1000);
+    </script>
+</body>
+
+</html>
