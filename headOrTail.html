@@ -10,155 +10,144 @@
 
 <body>
     <script>
-        let coin = ["Head", "Tail"]
-        function coinTossing() {
-            compCoinTossing = []
-            plyrCoinTossing = []
-            coinTossingOfPlayerAndComputer = {}
-            for (let i = 0; i < 10; i++) {
-                comp = coin[Math.round(Math.random())]
-                plyr = coin[Math.round(Math.random())]
-                compCoinTossing.push(comp)
-                plyrCoinTossing.push(plyr)
-            }
-            console.log("");
-            computerPoint = compCoinTossing.filter(n => n == "Head").length
-            playerPoint = plyrCoinTossing.filter(n => n == "Head").length
-            coinTossingOfPlayerAndComputer["Computer"] = computerPoint
-            coinTossingOfPlayerAndComputer["Player"] = playerPoint
-            return (compCoinTossing, plyrCoinTossing, computerPoint, playerPoint, coinTossingOfPlayerAndComputer)
-
-        }
-
-        function totalRoundWiner() {
-            totalTable = []
-            totalCoinTossing = []
-            totalPointsOfPlayerAndComputer = {}
-            totalWinTable = []
-            roundNo = []
-            rounds = 0
-            for (let j = 0; j < 4; j++) {
-                noOfRounds = { "Round": j + 1 }
-                coinTossing()
-
-                roundNo.push(noOfRounds)
-                totalTable.push(noOfRounds, coinTossingOfPlayerAndComputer)
-                totalCoinTossing.push(coinTossingOfPlayerAndComputer)
-            }
-            for (i = 0; i < roundNo.length; i++) {
-                for (j = 0; j < totalCoinTossing.length; j++) {
-                    if (i == j) {
-                        (totalCoinTossing[j]["round"] = roundNo[i].Round)
+        let participants = [{ name: "compter", Points: 0 }, { name: "You", Points: 0 }]
+        let totalMatches = 10;
+        let Round = 1;
+        let blopStorage = [];
+       
+        function matchesResultAssigning(PossibleOutcome, player, totalRounds) {
+            let eachRoundDetails = [];
+            let eachRoundResult = [];
+            for (eachMatches = 0; eachMatches <= totalMatches - 1; eachMatches++) {
+                if (PossibleOutcome[eachMatches] == 1) {
+                    const eachMatchDetails = {
+                        MATCH: eachMatches + 1,
+                        PLAYER1NAME: player[0].name,
+                        PLAYER1: 'HEAD',
+                        PLAYER2NAME: player[1].name,
+                        PLAYER2: 'FLOWER',
+                        MATCHRESULT: 'compter WON'
+                    };
+                    blopStorage.push(eachMatchDetails);
+                    eachRoundDetails.push(eachMatchDetails);
+                    player[0].Points += 1
+                } else if (PossibleOutcome[(totalMatches * 2) - eachMatches] == 1) {
+                    const eachMatchDetails = {
+                        MATCH: eachMatches + 1,
+                        PLAYER1NAME: player[0].name,
+                        PLAYER1: 'FLOWER',
+                        PLAYER2NAME: player[1].name,
+                        PLAYER2: 'HEAD',
+                        MATCHRESULT: 'COMPUTER WON'
                     }
+                    blopStorage.push(eachMatchDetails);
+                    eachRoundDetails.push(eachMatchDetails);
+                    player[1].Points += 1
+                }
+                else {
+                    const eachMatchDetails = {
+                        MATCH: eachMatches + 1,
+                        PLAYER1NAME: player[0].name,
+                        PLAYER1: 'FLOWER',  
+                        PLAYER2NAME: player[1].name,
+                        PLAYER2: 'FLOWER',
+                        MATCHRESULT: 'BOTH LOSS'}
+                    blopStorage.push(eachMatchDetails);
+                    eachRoundDetails.push(eachMatchDetails);
+                    player[1].Points += 0;
+                    player[0].Points += 0;
                 }
             }
-            totalComputerPoints = (totalCoinTossing.reduce((a, b) => a + b.Computer, 0))
-            totalPlayerPoints = (totalCoinTossing.reduce((a, b) => a + b.Player, 0))
-            totalPointsOfPlayerAndComputer["TotalComputer"] = totalComputerPoints
-            totalPointsOfPlayerAndComputer["TotalPlayer"] = totalPlayerPoints
-            totalWinTable.push(totalPointsOfPlayerAndComputer)
-            return (totalTable, totalCoinTossing, totalPointsOfPlayerAndComputer, totalWinTable, roundNo)
-        }
-
-        function finalWiner() {
-            if (totalComputerPoints > totalPlayerPoints) {
-                console.log(` Coin Tossing Winner is COMPUTER `);
-            } else if (totalComputerPoints < totalPlayerPoints) {
-                console.log(` Coin Tossing Winner is PLAYER `);
-            } else {
-                console.log(` Coin Tossing Is a Draw `);
+            const newNumber = totalRounds - 1;
+            let eachMatchPlayerAResult = eachRoundDetails.reduce((a, b) => a + b.PLAYER1POINTS, 0);
+            let eachMatchPlayerBResult = eachRoundDetails.reduce((a, b) => a + b.PLAYER2POINTS, 0);
+            const eachRoundResultA = {
+                name: "compter",
+                Points: eachMatchPlayerAResult
             }
-        }
-
-        function roundWinner() {
-            if (computerPoint > playerPoint) {
-                console.log(` Winner Computer `);
-            } else if (computerPoint < playerPoint) {
-                console.log(` Winner Player `);
-            } else {
-                console.log(` Its a Draw `);
+            eachRoundResult.push(eachRoundResultA)
+            const eachRoundResultB = {
+                name: "YOU",
+                Points: eachMatchPlayerBResult
             }
-
-        }
-
-        function roundsPlayed() {
-            let counting = 0
-            let intervals = setInterval(() => {
-                coinTossing()
-                console.log(` Tossing ${counting + 1} `);
-                console.log(`▶ Computer got 🪙${compCoinTossing[counting]}🪙 ➖ Player got 🪙${plyrCoinTossing[counting]}🪙`)
-                counting++
-                if (counting == 10) {
-                    clearInterval(intervals)
+            eachRoundResult.push(eachRoundResultB)
+            if (newNumber > 0) {
+                setTimeout(() => {
+                    console.table(`ROUND ${Round}`);
+                    eachMatchLoopCount = 0;
+                    sI = setInterval(() => {
+                        justGiveThePassingValueToMe(eachRoundDetails)
+                        if (eachMatchLoopCount == 9) {
+                            clearInterval(sI);
+                        }
+                        eachMatchLoopCount++
+                    }, 1000);
+                    matchNumber = 0;
+                    function justGiveThePassingValueToMe(anything) {
+                        if (matchNumber > 10) {
+                            matchNumber = 0;
+                        }
+                        console.log(anything[matchNumber])
+                        matchNumber++;
+                    }
                     setTimeout(() => {
-                        console.log("-----------------------------------------");
-                        console.log(`Computer points ${computerPoint}`)
-                        console.log(`Player points ${playerPoint}`)
-                        roundWinner()
-
-                        console.log("");
-                    }, 5000);
+                        console.table(eachRoundDetails);
+                        console.log('-------------------------------------------------------------');
+                        console.table(`ROUND ${Round} RESULT`);
+                        console.table(eachRoundResult)
+                        summary(eachRoundResult)
+                        console.log('-------------------------------------------------------------');
+                        Round++
+                        console.table(`OVERALL ROUND GAME RESULT`)
+                        console.table(player);
+                        summary(player)
+                        console.log('-------------------------------------------------------------');
+                        console.log('-------------------------------------------------------------');
+                        matchesResultAssigning((possibilitiesOfHeadOrTails(totalMatches)), participants, newNumber)
+                    }, 14000);
+                }, 1000)
+            }
+        } matchesResultAssigning((possibilitiesOfHeadOrTails(totalMatches)), participants, 5)
+        function possibilitiesOfHeadOrTails(Matches) {
+            possibleOutcomeResult = []
+            for (everyMatch = 0; everyMatch <= (Matches * 2) - 1; everyMatch++) {
+                let foundedResult = Math.floor((Math.random() * 2) + 1);
+                possibleOutcomeResult.push(foundedResult)
+            }
+            return possibleOutcomeResult
+        }
+        function summary(player) {
+            player[0].Points > player[1].Points && console.table(`Player ${player[0].name} leads ${player[0].Points} Heads`);
+            player[0].Points < player[1].Points && console.table(`Player ${player[1].name} leads ${player[1].Points} Heads`);
+            player[0].Points == player[1].Points && console.table(`Both Player ${player[0].name} & ${player[1].name} have ${player[0].Points}Heads`);
+        }
+        setTimeout(() => {
+            blopresult = ''
+            blopString = ''
+            blopString += "MATCH,PLAYER1NAME,PLAYER1 RESULT, PLAYER2NAME,PLAYER2 RESULT,MATCHRESULT"
+            blopString += "\r\n"
+            count = 0
+            for (element of blopStorage) {
+                if (count == 10) {
+                    count = 0
+                    blopString += "\r\n"
+                    blopString += "MATCH,PLAYER1NAME,PLAYER1, PLAYER2NAME,PLAYER2,MATCHRESULT"
+                    blopString += "\r\n"
                 }
-            }, 1000);
-        }
-
-        function numberOfRounds() {
-            console.log(` ROUND 1`);
-            roundsPlayed()
-            let counting = 1
-            let intervals = setInterval(() => {
-                roundsPlayed()
-                counting++
-                console.log(` ROUND ${counting} `);
-                if (counting == 4) {
-                    clearInterval(intervals)
-                    setTimeout(() => {
-                        totalRoundWiner()
-                        console.table(totalPointsOfPlayerAndComputer)
-                        finalWiner()
-
-                    }, 15500);
-                }
-            }, 15100);
-        }
-        numberOfRounds()
-        totalRoundWiner()
-
-        let sc = ""
-        sc += "Round" + " ," + "Computer Points" + " , " + "Player Points"
-        sc += "\r\n"
-        for (i of totalCoinTossing) {
-
-            sc += i.round + "," + i.Computer + "," + i.Player + ","
-            sc += "\r\n"
-
-        }
-
-        sc += "\r\n"
-        sc += "Total" + ","+"Total Computer Points" + "," + "Total Player Points"
-        sc += "\r\n"
-        for (i of totalWinTable) {
-            sc +="Total points" + ","+ i.TotalComputer + "," + i.TotalPlayer + ","
-            sc += "\r\n"
-        }
-
-        if (totalComputerPoints > totalPlayerPoints) {
-            winner = (" Coin Tossing Winner is COMPUTER ");
-        } else if (totalComputerPoints < totalPlayerPoints) {
-            winner = (" Coin Tossing Winner is PLAYER ");
-        } else {
-            winner = (" Coin Tossing Is a Draw ");
-        }
-        sc += "\r\n"
-        sc += (winner);
-        let tempblob = new Blob([sc], { type: "text\csv" })
-        let tempURL = window.URL.createObjectURL(tempblob)
-        let activation = document.createElement("a")
-        activation.href = tempURL
-        activation.download = "rtn.csv"
-        activation.click()
-        window.URL.revokeObjectURL(tempURL)
-        activation.remove()
+                blopString += element.MATCH + "," + element.PLAYER1NAME + "," + element.PLAYER1 + "," + element.PLAYER2NAME + "," + element.PLAYER2 + "," + element.MATCHRESULT + ","
+                blopString += "\r\n"
+                count++
+            }
+            console.log(blopString);
+            let tempBlop = new Blob([blopString], { type: 'text/csv' })
+            let tempURL = window.URL.createObjectURL(tempBlop)
+            let activation = document.createElement("a")
+            activation.href = tempURL
+            activation.download = 'Result.csv'
+            activation.click()
+            window.URL.revokeObjectURL(tempURL)
+            activation.remove()
+        }, 50 * 1000);
     </script>
 </body>
 
